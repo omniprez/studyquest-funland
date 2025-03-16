@@ -6,6 +6,15 @@ import ProfileHeader from "./ProfileHeader";
 interface PersonalInfoFormProps {
   user: {
     name: string;
+    avatar: string;
+    level: number;
+    xp: number;
+    maxXp: number;
+    team: {
+      name: string;
+      logo: string;
+      color: string;
+    }
   };
   setUser: React.Dispatch<React.SetStateAction<{
     name: string;
@@ -37,7 +46,7 @@ const PersonalInfoForm = ({ user, setUser }: PersonalInfoFormProps) => {
             type="text" 
             className="w-full px-3 py-2 border rounded-md"
             value={user.name}
-            onChange={(e) => setUser({ ...user, name: e.target.value })}
+            onChange={(e) => setUser(prevUser => ({ ...prevUser, name: e.target.value }))}
           />
         </div>
         
