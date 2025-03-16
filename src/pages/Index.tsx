@@ -16,22 +16,12 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
 import UserProfileWidget from "@/components/UserProfileWidget";
+import UserMenuDropdown from "@/components/UserMenuDropdown";
+import { useAuth } from "@/context/AuthContext";
 
 const Index = () => {
-  const [user] = useState({
-    name: "Alex Johnson",
-    avatar: "https://i.pravatar.cc/150?img=12",
-    level: 7,
-    xp: 1450,
-    maxXp: 2000,
-    energy: 75,
-    maxEnergy: 100,
-    team: {
-      name: "Manchester United",
-      color: "#DA291C",
-    }
-  });
-
+  const { profile } = useAuth();
+  
   const [recentQuests] = useState([
     {
       id: "1",
@@ -73,24 +63,44 @@ const Index = () => {
     });
   };
 
+  // Convert Supabase profile to the format expected by UserProfileWidget
+  const userProfile = profile ? {
+    name: profile.username,
+    level: profile.level,
+    xp: profile.xp,
+    maxXp: profile.max_xp,
+    energy: profile.energy,
+    maxEnergy: profile.max_energy,
+    avatar: profile.avatar_url,
+    team: {
+      name: "Default Team", // This would come from the teams table
+      color: "#DA291C",
+    }
+  } : null;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
       
       <div className="container mx-auto py-6 px-4 md:px-0 md:ml-64">
-        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <UserMenuDropdown />
+        </div>
         
         {/* User Profile */}
-        <UserProfileWidget 
-          name={user.name}
-          level={user.level}
-          xp={user.xp}
-          maxXp={user.maxXp}
-          energy={user.energy}
-          maxEnergy={user.maxEnergy}
-          avatar={user.avatar}
-          team={user.team}
-        />
+        {userProfile && (
+          <UserProfileWidget 
+            name={userProfile.name}
+            level={userProfile.level}
+            xp={userProfile.xp}
+            maxXp={userProfile.maxXp}
+            energy={userProfile.energy}
+            maxEnergy={userProfile.maxEnergy}
+            avatar={userProfile.avatar}
+            team={userProfile.team}
+          />
+        )}
         
         {/* Weekly Progress Summary */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
@@ -155,10 +165,10 @@ const Index = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {user.maxXp - user.xp} XP
+                {userProfile ? userProfile.maxXp - userProfile.xp : 0} XP
               </div>
               <Progress 
-                value={(user.xp / user.maxXp) * 100} 
+                value={userProfile ? (userProfile.xp / userProfile.maxXp) * 100 : 0} 
                 className="h-2 mt-2 [&>div]:bg-gradient-to-r [&>div]:from-yellow-400 [&>div]:to-yellow-600" 
               />
             </CardContent>
@@ -270,7 +280,7 @@ const Index = () => {
         </div>
         
         {/* Study Tip Card */}
-        <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-6">
+        <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-6 mb-6">
           <h2 className="text-xl font-semibold text-blue-800 mb-2">Daily Study Tip</h2>
           <p className="text-blue-700">
             Try the "Pomodoro Technique": Study for 25 minutes, then take a 5-minute break. 

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Book, 
@@ -28,7 +28,26 @@ const Navigation = () => {
     { path: '/profile', icon: <UserCircle className="h-5 w-5" />, label: 'Profile' },
   ];
 
+  // Toggle mobile navigation
   const toggleNav = () => setIsOpen(!isOpen);
+
+  // Handle window resize to ensure desktop nav is visible when resizing from mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && !isOpen) {
+        // Force isOpen to true when switching to desktop to ensure sidebar is visible
+        setIsOpen(true);
+      }
+    };
+
+    // Set isOpen to true on initial load for desktop
+    if (window.innerWidth >= 768) {
+      setIsOpen(true);
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isOpen]);
 
   return (
     <>
@@ -51,7 +70,11 @@ const Navigation = () => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    if (window.innerWidth < 768) {
+                      setIsOpen(false); // Only close menu on mobile
+                    }
+                  }}
                   className={cn(
                     "flex items-center gap-2 p-2 rounded-lg",
                     isActive(item.path) 
