@@ -4,7 +4,7 @@ import {
   Trophy, 
   Star, 
   Book, 
-  Fire, 
+  Flame, 
   Calendar, 
   Clock, 
   Lightbulb, 
@@ -96,7 +96,7 @@ const AchievementsPage = () => {
       id: "d2",
       title: "Committed Learner",
       description: "Complete daily quests for 7 days in a row",
-      icon: <Fire className="h-5 w-5" />,
+      icon: <Flame className="h-5 w-5" />,
       color: "#EF4444",
       type: "daily",
       unlocked: true,
@@ -226,7 +226,7 @@ const AchievementsPage = () => {
             Milestones
           </TabsTrigger>
           <TabsTrigger value="daily" className="flex items-center">
-            <Fire className="h-4 w-4 mr-2" />
+            <Flame className="h-4 w-4 mr-2" />
             Daily Streaks
           </TabsTrigger>
           <TabsTrigger value="special" className="flex items-center">

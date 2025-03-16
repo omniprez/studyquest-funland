@@ -31,14 +31,13 @@ const TeamBadge = ({
       className={cn(
         "relative rounded-full flex items-center justify-center cursor-pointer transition-all duration-300",
         sizeClasses[size],
-        selected && "animate-pulse-glow ring-2 ring-offset-2",
+        selected && `animate-pulse-glow ring-2 ring-offset-2 ring-[${color}]`,
         onClick && "hover:scale-110",
         className
       )}
       style={{ 
         backgroundColor: color,
-        boxShadow: selected ? `0 0 10px ${color}80` : "none",
-        ringColor: color
+        boxShadow: selected ? `0 0 10px ${color}80` : "none"
       }}
       onClick={onClick}
     >

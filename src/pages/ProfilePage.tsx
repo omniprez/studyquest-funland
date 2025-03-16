@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   UserCircle, 
@@ -114,8 +113,7 @@ const ProfilePage = () => {
               </div>
               <Progress 
                 value={xpPercentage} 
-                className="h-2" 
-                indicatorClassName="bg-gradient-to-r from-yellow-400 to-yellow-600" 
+                className="h-2 bg-gray-100 [&>div]:bg-gradient-to-r [&>div]:from-yellow-400 [&>div]:to-yellow-600" 
               />
               <div className="text-xs text-gray-500 mt-1 text-right">
                 {user.maxXp - user.xp} XP to level {user.level + 1}

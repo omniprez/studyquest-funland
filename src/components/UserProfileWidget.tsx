@@ -58,8 +58,10 @@ const UserProfileWidget = ({
             </div>
             <span className="text-xs text-gray-500">{xp}/{maxXp} XP</span>
           </div>
-          <Progress value={xpPercentage} className="h-2" 
-            indicatorClassName="bg-gradient-to-r from-yellow-400 to-yellow-600" />
+          <Progress 
+            value={xpPercentage} 
+            className="h-2 bg-gray-100 [&>div]:bg-gradient-to-r [&>div]:from-yellow-400 [&>div]:to-yellow-600" 
+          />
         </div>
         
         <div>
@@ -70,8 +72,10 @@ const UserProfileWidget = ({
             </div>
             <span className="text-xs text-gray-500">{energy}/{maxEnergy}</span>
           </div>
-          <Progress value={energyPercentage} className="h-2" 
-            indicatorClassName="bg-gradient-to-r from-green-400 to-green-600" />
+          <Progress 
+            value={energyPercentage} 
+            className="h-2 bg-gray-100 [&>div]:bg-gradient-to-r [&>div]:from-green-400 [&>div]:to-green-600" 
+          />
         </div>
       </div>
     </div>
