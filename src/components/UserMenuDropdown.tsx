@@ -15,26 +15,27 @@ import { LogOut, Settings, User } from "lucide-react";
 const UserMenuDropdown = () => {
   const { user, profile, signOut } = useAuth();
   
-  if (!user || !profile) return null;
-  
-  const initials = profile.username
-    .split(' ')
-    .map(name => name[0])
-    .join('')
-    .toUpperCase();
+  // Provide a default menu even if user/profile is not available
+  const initials = profile?.username
+    ? profile.username
+        .split(' ')
+        .map(name => name[0])
+        .join('')
+        .toUpperCase()
+    : "GU";
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none">
         <Avatar className="h-9 w-9 cursor-pointer">
-          <AvatarImage src={profile.avatar_url} alt={profile.username} />
+          <AvatarImage src={profile?.avatar_url} alt={profile?.username || "Guest"} />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="flex flex-col">
-          <span className="font-medium">{profile.username}</span>
-          <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+          <span className="font-medium">{profile?.username || "Guest User"}</span>
+          <span className="text-xs text-muted-foreground truncate">{user?.email || "guest@example.com"}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <Link to="/profile">
@@ -50,10 +51,19 @@ const UserMenuDropdown = () => {
           </DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
-        </DropdownMenuItem>
+        {user ? (
+          <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log out</span>
+          </DropdownMenuItem>
+        ) : (
+          <Link to="/login">
+            <DropdownMenuItem className="cursor-pointer">
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log in</span>
+            </DropdownMenuItem>
+          </Link>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -12,6 +12,14 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 const Index = () => {
   const { userProfile, recentQuests, weeklyProgress } = useDashboardData();
   
+  if (!userProfile || !weeklyProgress || !recentQuests) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-lg">Loading dashboard data...</div>
+      </div>
+    );
+  }
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -23,18 +31,16 @@ const Index = () => {
         </div>
         
         {/* User Profile */}
-        {userProfile && (
-          <UserProfileWidget 
-            name={userProfile.name}
-            level={userProfile.level}
-            xp={userProfile.xp}
-            maxXp={userProfile.maxXp}
-            energy={userProfile.energy}
-            maxEnergy={userProfile.maxEnergy}
-            avatar={userProfile.avatar}
-            team={userProfile.team}
-          />
-        )}
+        <UserProfileWidget 
+          name={userProfile.name}
+          level={userProfile.level}
+          xp={userProfile.xp}
+          maxXp={userProfile.maxXp}
+          energy={userProfile.energy}
+          maxEnergy={userProfile.maxEnergy}
+          avatar={userProfile.avatar}
+          team={userProfile.team}
+        />
         
         {/* Weekly Progress Summary */}
         <WeeklyProgressSummary 
@@ -43,8 +49,8 @@ const Index = () => {
           questsCompleted={weeklyProgress.questsCompleted}
           totalQuests={weeklyProgress.totalQuests}
           streak={weeklyProgress.streak}
-          userXp={userProfile?.xp || 0}
-          userMaxXp={userProfile?.maxXp || 1000}
+          userXp={userProfile.xp}
+          userMaxXp={userProfile.maxXp}
         />
         
         {/* Active Quests */}

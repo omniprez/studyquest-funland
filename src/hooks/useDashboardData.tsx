@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 export interface UserProfile {
@@ -73,26 +73,14 @@ export const useDashboardData = () => {
   });
 
   // Create a default profile if none exists (for development/testing)
-  const userProfile: UserProfile = profile ? {
-    name: profile.username,
-    level: profile.level,
-    xp: profile.xp,
-    maxXp: profile.max_xp,
-    energy: profile.energy,
-    maxEnergy: profile.max_energy,
-    avatar: profile.avatar_url,
-    team: {
-      name: "Default Team", // This would come from the teams table
-      color: "#DA291C",
-    }
-  } : {
-    name: "Guest User",
-    level: 1,
-    xp: 0,
-    maxXp: 1000,
-    energy: 100,
-    maxEnergy: 100,
-    avatar: "https://api.dicebear.com/6.x/initials/svg?seed=Guest",
+  const userProfile: UserProfile = {
+    name: profile?.username || "Guest User",
+    level: profile?.level || 1,
+    xp: profile?.xp || 0,
+    maxXp: profile?.max_xp || 1000,
+    energy: profile?.energy || 100,
+    maxEnergy: profile?.max_energy || 100,
+    avatar: profile?.avatar_url || "https://api.dicebear.com/6.x/initials/svg?seed=Guest",
     team: {
       name: "Default Team",
       color: "#DA291C",
