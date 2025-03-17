@@ -43,8 +43,8 @@ const Index = () => {
           questsCompleted={weeklyProgress.questsCompleted}
           totalQuests={weeklyProgress.totalQuests}
           streak={weeklyProgress.streak}
-          userXp={userProfile?.xp}
-          userMaxXp={userProfile?.maxXp}
+          userXp={userProfile?.xp || 0}
+          userMaxXp={userProfile?.maxXp || 1000}
         />
         
         {/* Active Quests */}

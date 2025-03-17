@@ -72,8 +72,8 @@ export const useDashboardData = () => {
     streak: 5
   });
 
-  // Convert Supabase profile to the format expected by UserProfileWidget
-  const userProfile: UserProfile | null = profile ? {
+  // Create a default profile if none exists (for development/testing)
+  const userProfile: UserProfile = profile ? {
     name: profile.username,
     level: profile.level,
     xp: profile.xp,
@@ -85,7 +85,19 @@ export const useDashboardData = () => {
       name: "Default Team", // This would come from the teams table
       color: "#DA291C",
     }
-  } : null;
+  } : {
+    name: "Guest User",
+    level: 1,
+    xp: 0,
+    maxXp: 1000,
+    energy: 100,
+    maxEnergy: 100,
+    avatar: "https://api.dicebear.com/6.x/initials/svg?seed=Guest",
+    team: {
+      name: "Default Team",
+      color: "#DA291C",
+    }
+  };
 
   return {
     userProfile,
