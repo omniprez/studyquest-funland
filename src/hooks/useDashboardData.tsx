@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 export interface UserProfile {
@@ -72,18 +72,18 @@ export const useDashboardData = () => {
     streak: 5
   });
 
-  // Create a default profile if none exists (for development/testing)
+  // Default user profile that always works even without authentication
   const userProfile: UserProfile = {
     name: profile?.username || "Guest User",
-    level: profile?.level || 1,
-    xp: profile?.xp || 0,
+    level: profile?.level || 5,
+    xp: profile?.xp || 750,
     maxXp: profile?.max_xp || 1000,
-    energy: profile?.energy || 100,
+    energy: profile?.energy || 85,
     maxEnergy: profile?.max_energy || 100,
-    avatar: profile?.avatar_url || "https://api.dicebear.com/6.x/initials/svg?seed=Guest",
+    avatar: profile?.avatar_url || "https://api.dicebear.com/6.x/initials/svg?seed=GU",
     team: {
-      name: "Default Team",
-      color: "#DA291C",
+      name: profile?.team_id ? "Your Team" : "Red Devils",
+      color: "#DA291C", // Man United red
     }
   };
 

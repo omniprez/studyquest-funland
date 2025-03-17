@@ -12,14 +12,6 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 const Index = () => {
   const { userProfile, recentQuests, weeklyProgress } = useDashboardData();
   
-  if (!userProfile || !weeklyProgress || !recentQuests) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-lg">Loading dashboard data...</div>
-      </div>
-    );
-  }
-  
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />

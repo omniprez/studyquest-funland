@@ -15,27 +15,30 @@ import { LogOut, Settings, User } from "lucide-react";
 const UserMenuDropdown = () => {
   const { user, profile, signOut } = useAuth();
   
-  // Provide a default menu even if user/profile is not available
-  const initials = profile?.username
-    ? profile.username
-        .split(' ')
-        .map(name => name[0])
-        .join('')
-        .toUpperCase()
-    : "GU";
+  // Default values for guest users
+  const username = profile?.username || "Guest User";
+  const avatarUrl = profile?.avatar_url || "https://api.dicebear.com/6.x/initials/svg?seed=GU";
+  const email = user?.email || "guest@example.com";
+  
+  // Get initials for avatar fallback
+  const initials = username
+    .split(' ')
+    .map(name => name[0])
+    .join('')
+    .toUpperCase();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none">
         <Avatar className="h-9 w-9 cursor-pointer">
-          <AvatarImage src={profile?.avatar_url} alt={profile?.username || "Guest"} />
+          <AvatarImage src={avatarUrl} alt={username} />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="flex flex-col">
-          <span className="font-medium">{profile?.username || "Guest User"}</span>
-          <span className="text-xs text-muted-foreground truncate">{user?.email || "guest@example.com"}</span>
+          <span className="font-medium">{username}</span>
+          <span className="text-xs text-muted-foreground truncate">{email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <Link to="/profile">
