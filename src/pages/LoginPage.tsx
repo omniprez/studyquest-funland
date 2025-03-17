@@ -1,7 +1,7 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/context/AuthContext";
@@ -26,8 +26,16 @@ const loginSchema = z.object({
 type LoginValues = z.infer<typeof loginSchema>;
 
 const LoginPage = () => {
-  const { signIn, loading } = useAuth();
+  const { signIn, loading, user } = useAuth();
   const [authError, setAuthError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    // If user is already logged in, redirect to home
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -41,8 +49,9 @@ const LoginPage = () => {
     setAuthError(null);
     try {
       await signIn(values.email, values.password);
-    } catch (error) {
-      setAuthError("Failed to sign in. Please check your credentials.");
+      // Navigation happens in AuthContext via auth state listener
+    } catch (error: any) {
+      setAuthError(error.message || "Failed to sign in. Please check your credentials.");
     }
   };
 
