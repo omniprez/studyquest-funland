@@ -23,8 +23,8 @@ interface Team {
 const teamsData: Team[] = [
   {
     id: 1,
-    name: "Manchester United",
-    logo: "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg",
+    name: "Quantum Minds",
+    logo: "https://api.dicebear.com/6.x/shapes/svg?seed=QM",
     color: "#DA291C",
     members: 1243,
     rank: 1,
@@ -32,8 +32,8 @@ const teamsData: Team[] = [
   },
   {
     id: 2,
-    name: "Liverpool",
-    logo: "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg",
+    name: "Logic Lions",
+    logo: "https://api.dicebear.com/6.x/shapes/svg?seed=LL",
     color: "#C8102E",
     members: 1124,
     rank: 2,
@@ -41,8 +41,8 @@ const teamsData: Team[] = [
   },
   {
     id: 3,
-    name: "Chelsea",
-    logo: "https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg",
+    name: "Cosmic Scholars",
+    logo: "https://api.dicebear.com/6.x/shapes/svg?seed=CS",
     color: "#034694",
     members: 1056,
     rank: 3,
@@ -50,8 +50,8 @@ const teamsData: Team[] = [
   },
   {
     id: 4,
-    name: "Arsenal",
-    logo: "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
+    name: "Digital Wizards",
+    logo: "https://api.dicebear.com/6.x/shapes/svg?seed=DW",
     color: "#EF0107",
     members: 987,
     rank: 4,
@@ -59,8 +59,8 @@ const teamsData: Team[] = [
   },
   {
     id: 5,
-    name: "Manchester City",
-    logo: "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg",
+    name: "Nova Explorers",
+    logo: "https://api.dicebear.com/6.x/shapes/svg?seed=NE",
     color: "#6CABDD",
     members: 967,
     rank: 5,
@@ -68,8 +68,8 @@ const teamsData: Team[] = [
   },
   {
     id: 6,
-    name: "Tottenham Hotspur",
-    logo: "https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg",
+    name: "Phoenix Academy",
+    logo: "https://api.dicebear.com/6.x/shapes/svg?seed=PA",
     color: "#132257",
     members: 912,
     rank: 6,
@@ -101,11 +101,11 @@ const TeamsPage = () => {
       <div className="bg-white rounded-xl border p-6 mb-6">
         <div className="flex items-center mb-4">
           <Trophy className="h-6 w-6 text-exp-point mr-2" />
-          <h2 className="text-xl font-semibold">Football Club Teams</h2>
+          <h2 className="text-xl font-semibold">Academic Teams</h2>
         </div>
         
         <p className="text-gray-600 mb-6">
-          Join a football club team to compete with other students! Complete study quests to earn points for your team.
+          Join an academic team to compete with other students! Complete study quests to earn points for your team.
           The team with the most points at the end of the month wins special rewards!
         </p>
         

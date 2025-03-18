@@ -13,3 +13,14 @@ export type Profile = {
   created_at?: string;
   updated_at?: string;
 };
+
+// Team type for the application
+export type Team = {
+  id: string;
+  name: string;
+  logo: string;
+  color: string;
+  description?: string;
+  created_at?: string;
+  updated_at?: string;
+};

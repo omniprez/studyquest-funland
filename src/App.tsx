@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import Navigation from "@/components/Navigation";
 import Index from "./pages/Index";
 import QuestsPage from "./pages/QuestsPage";
 import AchievementsPage from "./pages/AchievementsPage";
@@ -17,15 +18,25 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Layout component with Navigation
+const AppLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      {children}
+    </div>
+  );
+};
+
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading) return <AppLayout><div className="min-h-screen flex items-center justify-center ml-0 md:ml-64">Loading...</div></AppLayout>;
   
   if (!user) return <Navigate to="/login" />;
   
-  return <>{children}</>;
+  return <AppLayout>{children}</AppLayout>;
 };
 
 // Public route that redirects to dashboard if logged in

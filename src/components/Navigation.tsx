@@ -34,7 +34,7 @@ const Navigation = () => {
   // Handle window resize to ensure desktop nav is visible when resizing from mobile
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768 && !isOpen) {
+      if (window.innerWidth >= 768) {
         // Force isOpen to true when switching to desktop to ensure sidebar is visible
         setIsOpen(true);
       }
@@ -47,7 +47,14 @@ const Navigation = () => {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [isOpen]);
+  }, []);
+
+  // Always make the sidebar visible on desktop, regardless of navigation changes
+  useEffect(() => {
+    if (window.innerWidth >= 768) {
+      setIsOpen(true);
+    }
+  }, [location.pathname]);
 
   return (
     <>
@@ -56,7 +63,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between p-4">
           <Link to="/" className="flex items-center gap-2">
             <Gamepad className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl">StudyQuest</span>
+            <span className="font-bold text-xl">EduQuest</span>
           </Link>
           <Button variant="ghost" size="icon" onClick={toggleNav}>
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -92,10 +99,10 @@ const Navigation = () => {
       </div>
 
       {/* Desktop navigation */}
-      <div className="hidden md:flex flex-col fixed h-full w-64 bg-white border-r p-6">
+      <div className="hidden md:flex flex-col fixed h-full w-64 bg-white border-r p-6 z-50">
         <div className="flex items-center gap-2 mb-10">
           <Gamepad className="h-7 w-7 text-primary" />
-          <span className="font-bold text-xl">StudyQuest</span>
+          <span className="font-bold text-xl">EduQuest</span>
         </div>
         
         <nav className="flex flex-col space-y-2">

@@ -82,8 +82,8 @@ export const useDashboardData = () => {
     maxEnergy: profile?.max_energy || 100,
     avatar: profile?.avatar_url || "https://api.dicebear.com/6.x/initials/svg?seed=GU",
     team: {
-      name: profile?.team_id ? "Your Team" : "Red Devils",
-      color: "#DA291C", // Man United red
+      name: profile?.team_id ? "Your Team" : "Quantum Minds",
+      color: "#DA291C", // Same red color as the original
     }
   };
 
