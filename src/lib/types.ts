@@ -21,6 +21,9 @@ export type Team = {
   logo: string;
   color: string;
   description?: string;
+  members?: number;
+  rank?: number;
+  totalPoints?: number;
   created_at?: string;
   updated_at?: string;
 };
