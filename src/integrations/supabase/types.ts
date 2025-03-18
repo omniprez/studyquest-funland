@@ -59,6 +59,54 @@ export type Database = {
           },
         ]
       }
+      quests: {
+        Row: {
+          completed: boolean
+          created_at: string | null
+          description: string
+          due_date: string | null
+          duration_minutes: number
+          energy_reward: number
+          id: string
+          progress: number
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+          xp_reward: number
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string | null
+          description: string
+          due_date?: string | null
+          duration_minutes: number
+          energy_reward: number
+          id?: string
+          progress?: number
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+          xp_reward: number
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string | null
+          description?: string
+          due_date?: string | null
+          duration_minutes?: number
+          energy_reward?: number
+          id?: string
+          progress?: number
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       teams: {
         Row: {
           color: string

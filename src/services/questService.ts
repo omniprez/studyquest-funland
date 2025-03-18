@@ -25,7 +25,7 @@ export const fetchUserQuests = async (user: User | null): Promise<Quest[]> => {
   }
 };
 
-export const createQuest = async (user: User | null, quest: Omit<Quest, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<Quest | null> => {
+export const createQuest = async (user: User | null, quest: Omit<Quest, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'progress' | 'completed'>): Promise<Quest | null> => {
   if (!user) return null;
   
   try {
