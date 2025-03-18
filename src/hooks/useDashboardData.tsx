@@ -1,6 +1,8 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { Team } from "@/lib/types";
 
 export interface UserProfile {
   name: string;
@@ -13,6 +15,7 @@ export interface UserProfile {
   team: {
     name: string;
     color: string;
+    logo?: string;
   }
 }
 
@@ -35,7 +38,34 @@ export interface WeeklyProgress {
 
 export const useDashboardData = () => {
   const { profile } = useAuth();
+  const [userTeam, setUserTeam] = useState<Team | null>(null);
   
+  // Fetch the user's team from the database
+  useEffect(() => {
+    const fetchUserTeam = async () => {
+      if (profile?.team_id) {
+        try {
+          const { data, error } = await supabase
+            .from('teams')
+            .select('*')
+            .eq('id', profile.team_id)
+            .single();
+            
+          if (error) {
+            console.error('Error fetching user team:', error);
+            return;
+          }
+          
+          setUserTeam(data as Team);
+        } catch (error) {
+          console.error('Error in team fetch:', error);
+        }
+      }
+    };
+
+    fetchUserTeam();
+  }, [profile?.team_id]);
+
   // Mock data - in a real app, this would be fetched from an API
   const [recentQuests] = useState<Quest[]>([
     {
@@ -72,7 +102,7 @@ export const useDashboardData = () => {
     streak: 5
   });
 
-  // Default user profile that always works even without authentication
+  // User profile with actual team data if available
   const userProfile: UserProfile = {
     name: profile?.username || "Guest User",
     level: profile?.level || 5,
@@ -81,10 +111,16 @@ export const useDashboardData = () => {
     energy: profile?.energy || 85,
     maxEnergy: profile?.max_energy || 100,
     avatar: profile?.avatar_url || "https://api.dicebear.com/6.x/initials/svg?seed=GU",
-    team: {
-      name: profile?.team_id ? "Your Team" : "Quantum Minds",
-      color: "#DA291C", // Same red color as the original
-    }
+    team: userTeam 
+      ? {
+          name: userTeam.name,
+          color: userTeam.color,
+          logo: userTeam.logo
+        }
+      : {
+          name: "No Team",
+          color: "#CCCCCC", 
+        }
   };
 
   return {

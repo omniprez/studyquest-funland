@@ -78,25 +78,54 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchProfile = async (userId: string) => {
     try {
-      // For demo purposes - creating a mock profile
-      // In production, you would fetch from your profiles table
-      const mockProfile: Profile = {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching profile:', error);
+        // If no profile found, create one
+        if (error.code === 'PGRST116') {
+          createProfile(userId);
+        }
+        return;
+      }
+      
+      setProfile(data as Profile);
+    } catch (error) {
+      console.error('Error in profile fetch:', error);
+    }
+  };
+
+  const createProfile = async (userId: string) => {
+    try {
+      // Create a new profile with default values
+      const newProfile: Partial<Profile> = {
         id: userId,
-        username: 'Player',
+        username: user?.user_metadata?.username || `User_${userId.substring(0, 8)}`,
         avatar_url: `https://api.dicebear.com/6.x/initials/svg?seed=${userId.substring(0, 2)}`,
-        level: 5,
-        xp: 750,
+        level: 1,
+        xp: 0,
         max_xp: 1000,
-        energy: 85,
-        max_energy: 100,
-        team_id: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        energy: 100,
+        max_energy: 100
       };
       
-      setProfile(mockProfile);
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert([newProfile])
+        .select();
+        
+      if (error) {
+        console.error('Error creating profile:', error);
+        return;
+      }
+      
+      setProfile(data[0] as Profile);
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      console.error('Error in create profile:', error);
     }
   };
 

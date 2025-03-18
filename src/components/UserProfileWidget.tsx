@@ -2,6 +2,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Star, Zap } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import TeamBadge from "@/components/TeamBadge";
 
 interface UserProfileWidgetProps {
   name: string;
@@ -14,6 +16,7 @@ interface UserProfileWidgetProps {
   team: {
     name: string;
     color: string;
+    logo?: string;
   };
 }
 
@@ -27,6 +30,7 @@ const UserProfileWidget = ({
   avatar,
   team,
 }: UserProfileWidgetProps) => {
+  const { profile } = useAuth();
   const xpPercentage = Math.round((xp / maxXp) * 100);
   const energyPercentage = Math.round((energy / maxEnergy) * 100);
 
@@ -40,10 +44,20 @@ const UserProfileWidget = ({
         <div className="ml-4">
           <h2 className="font-bold text-lg">{name}</h2>
           <div className="flex items-center text-sm text-gray-500">
-            <div 
-              className="w-3 h-3 rounded-full mr-2"
-              style={{ backgroundColor: team.color }}
-            ></div>
+            {team.logo ? (
+              <TeamBadge 
+                name={team.name}
+                logo={team.logo}
+                color={team.color}
+                size="sm"
+                className="mr-2"
+              />
+            ) : (
+              <div 
+                className="w-3 h-3 rounded-full mr-2"
+                style={{ backgroundColor: team.color }}
+              ></div>
+            )}
             {team.name} Fan
           </div>
         </div>

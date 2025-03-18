@@ -1,6 +1,9 @@
 
 import { Team } from "@/lib/types";
+import { supabase } from "@/integrations/supabase/client";
 
+// This is the static fallback data, but the app should now use
+// the real data from Supabase in the TeamsPage component
 export const teamsData: Team[] = [
   {
     id: "1",
@@ -57,3 +60,23 @@ export const teamsData: Team[] = [
     totalPoints: 12870
   }
 ];
+
+// Function to fetch teams from Supabase
+export const fetchTeams = async (): Promise<Team[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('teams')
+      .select('*')
+      .order('rank', { ascending: true });
+      
+    if (error) {
+      console.error('Error fetching teams:', error);
+      return teamsData; // Fallback to static data
+    }
+    
+    return data as Team[] || teamsData;
+  } catch (error) {
+    console.error('Error in teams fetch:', error);
+    return teamsData; // Fallback to static data
+  }
+};

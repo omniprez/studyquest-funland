@@ -9,7 +9,95 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          energy: number | null
+          id: string
+          level: number | null
+          max_energy: number | null
+          max_xp: number | null
+          team_id: string | null
+          updated_at: string | null
+          username: string
+          xp: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          energy?: number | null
+          id: string
+          level?: number | null
+          max_energy?: number | null
+          max_xp?: number | null
+          team_id?: string | null
+          updated_at?: string | null
+          username: string
+          xp?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          energy?: number | null
+          id?: string
+          level?: number | null
+          max_energy?: number | null
+          max_xp?: number | null
+          team_id?: string | null
+          updated_at?: string | null
+          username?: string
+          xp?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          color: string
+          created_at: string | null
+          description: string | null
+          id: string
+          logo: string
+          members: number | null
+          name: string
+          rank: number | null
+          total_points: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          color: string
+          created_at?: string | null
+          description?: string | null
+          id: string
+          logo: string
+          members?: number | null
+          name: string
+          rank?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          logo?: string
+          members?: number | null
+          name?: string
+          rank?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
