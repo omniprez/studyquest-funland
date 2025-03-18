@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const createProfile = async (userId: string) => {
     try {
       // Create a new profile with default values
-      const newProfile: Partial<Profile> = {
+      const newProfile = {
         id: userId,
         username: user?.user_metadata?.username || `User_${userId.substring(0, 8)}`,
         avatar_url: `https://api.dicebear.com/6.x/initials/svg?seed=${userId.substring(0, 2)}`,
@@ -115,7 +115,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       const { data, error } = await supabase
         .from('profiles')
-        .insert([newProfile])
+        .insert(newProfile)
         .select();
         
       if (error) {

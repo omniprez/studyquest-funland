@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Book, 
   Brain, 
@@ -7,156 +6,147 @@ import {
   Clock, 
   Calendar, 
   Filter,
-  Plus
+  Plus,
+  Loader2
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { 
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import DailyQuestCard from "@/components/DailyQuestCard";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
+import { Quest } from "@/lib/types";
+import { fetchUserQuests, createQuest, updateQuestProgress, completeQuest } from "@/services/questService";
 
-type QuestType = "reading" | "revision" | "homework" | "activity";
-type QuestFilter = "all" | QuestType;
-
-interface Quest {
-  id: string;
-  type: QuestType;
-  title: string;
-  description: string;
-  durationMinutes: number;
-  xpReward: number;
-  energyReward: number;
-  completed: boolean;
-  progress: number;
-}
+type QuestFilter = "all" | Quest["type"];
 
 const QuestsPage = () => {
+  const { user } = useAuth();
   const [filter, setFilter] = useState<QuestFilter>("all");
-  const [dailyQuests, setDailyQuests] = useState<Quest[]>([
-    {
-      id: "1",
-      type: "reading",
-      title: "Daily Reading",
-      description: "Read a book for at least 60 minutes",
-      durationMinutes: 60,
-      xpReward: 100,
-      energyReward: 20,
-      completed: false,
-      progress: 0,
-    },
-    {
-      id: "2",
-      type: "revision",
-      title: "Math Revision",
-      description: "Review this week's math lessons",
-      durationMinutes: 45,
-      xpReward: 80,
-      energyReward: 15,
-      completed: false,
-      progress: 0,
-    },
-    {
-      id: "3",
-      type: "homework",
-      title: "Science Homework",
-      description: "Complete today's science assignments",
-      durationMinutes: 30,
-      xpReward: 60,
-      energyReward: 10,
-      completed: false,
-      progress: 25,
-    },
-    {
-      id: "4",
-      type: "activity",
-      title: "Language Practice",
-      description: "Practice new vocabulary words",
-      durationMinutes: 20,
-      xpReward: 40,
-      energyReward: 5,
-      completed: false,
-      progress: 0,
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
-  const [weeklyQuests, setWeeklyQuests] = useState<Quest[]>([
-    {
-      id: "5",
-      type: "reading",
-      title: "Book Challenge",
-      description: "Finish reading one book this week",
-      durationMinutes: 240,
-      xpReward: 300,
-      energyReward: 50,
-      completed: false,
-      progress: 30,
-    },
-    {
-      id: "6",
-      type: "homework",
-      title: "Project Completion",
-      description: "Finish your history project by Friday",
-      durationMinutes: 180,
-      xpReward: 250,
-      energyReward: 40,
-      completed: false,
-      progress: 45,
-    },
-    {
-      id: "7",
-      type: "revision",
-      title: "Test Preparation",
-      description: "Prepare for next week's math test",
-      durationMinutes: 120,
-      xpReward: 200,
-      energyReward: 30,
-      completed: false,
-      progress: 10,
-    },
-  ]);
+  const [newQuest, setNewQuest] = useState({
+    title: "",
+    description: "",
+    type: "reading" as Quest["type"],
+    duration_minutes: 30,
+    xp_reward: 100,
+    energy_reward: 20
+  });
+  
+  useEffect(() => {
+    const loadQuests = async () => {
+      setLoading(true);
+      const userQuests = await fetchUserQuests(user);
+      setQuests(userQuests);
+      setLoading(false);
+    };
+    
+    loadQuests();
+  }, [user]);
+  
+  const handleCreateQuest = async () => {
+    if (!newQuest.title) {
+      toast.error("Please provide a title for your quest");
+      return;
+    }
+    
+    try {
+      const createdQuest = await createQuest(user, newQuest);
+      
+      if (createdQuest) {
+        setQuests(prev => [createdQuest, ...prev]);
+        setNewQuest({
+          title: "",
+          description: "",
+          type: "reading",
+          duration_minutes: 30,
+          xp_reward: 100,
+          energy_reward: 20
+        });
+        setIsDialogOpen(false);
+        toast.success("Quest created successfully!");
+      } else {
+        toast.error("Failed to create quest. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating quest:", error);
+      toast.error("An error occurred while creating your quest");
+    }
+  };
 
-  const handleStartTracking = (questId: string, questList: "daily" | "weekly") => {
-    // In a real app, this would start a timer or tracking mechanism
+  const handleStartTracking = async (questId: string) => {
     toast.info("Tracking started!", {
       description: "Your progress will update automatically as you study."
     });
     
-    // For demo purposes, we'll just update progress to show some activity
-    if (questList === "daily") {
-      setDailyQuests(dailyQuests.map(quest => 
-        quest.id === questId ? { ...quest, progress: 30 } : quest
-      ));
-    } else {
-      setWeeklyQuests(weeklyQuests.map(quest => 
-        quest.id === questId ? { ...quest, progress: Math.min(quest.progress + 20, 100) } : quest
-      ));
-    }
-  };
-
-  const handleCompleteQuest = (questId: string, questList: "daily" | "weekly") => {
-    if (questList === "daily") {
-      setDailyQuests(dailyQuests.map(quest => 
-        quest.id === questId ? { ...quest, completed: true, progress: 100 } : quest
-      ));
-    } else {
-      setWeeklyQuests(weeklyQuests.map(quest => 
-        quest.id === questId ? { ...quest, completed: true, progress: 100 } : quest
+    const questToUpdate = quests.find(q => q.id === questId);
+    if (questToUpdate) {
+      const newProgress = Math.min(questToUpdate.progress + 30, 99);
+      await updateQuestProgress(questId, newProgress);
+      
+      setQuests(quests.map(quest => 
+        quest.id === questId ? { ...quest, progress: newProgress } : quest
       ));
     }
   };
 
-  const filteredDailyQuests = filter === "all" 
-    ? dailyQuests 
-    : dailyQuests.filter(quest => quest.type === filter);
+  const handleCompleteQuest = async (questId: string) => {
+    if (!user) return;
     
-  const filteredWeeklyQuests = filter === "all"
-    ? weeklyQuests
-    : weeklyQuests.filter(quest => quest.type === filter);
+    try {
+      const success = await completeQuest(questId, user.id);
+      
+      if (success) {
+        setQuests(quests.map(quest => 
+          quest.id === questId ? { ...quest, completed: true, progress: 100 } : quest
+        ));
+        
+        toast.success("Quest completed!", {
+          description: "You've earned rewards for completing this quest."
+        });
+      } else {
+        toast.error("Failed to complete quest. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error completing quest:", error);
+      toast.error("An error occurred while completing your quest");
+    }
+  };
+
+  const dailyQuests = quests.filter(quest => 
+    !quest.due_date && (filter === "all" || quest.type === filter)
+  );
+  
+  const weeklyQuests = quests.filter(quest => 
+    quest.due_date && (filter === "all" || quest.type === filter)
+  );
 
   return (
     <div className="container mx-auto py-6 px-4 md:px-0 md:ml-64">
@@ -190,83 +180,153 @@ const QuestsPage = () => {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Quest
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Quest
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Create New Quest</DialogTitle>
+                <DialogDescription>
+                  Add a new study quest to track your learning progress.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="title">Quest Title</Label>
+                  <Input 
+                    id="title" 
+                    value={newQuest.title}
+                    onChange={(e) => setNewQuest({...newQuest, title: e.target.value})}
+                    placeholder="e.g., Complete Math Chapter 5"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea 
+                    id="description" 
+                    value={newQuest.description}
+                    onChange={(e) => setNewQuest({...newQuest, description: e.target.value})}
+                    placeholder="Describe what you need to do"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="type">Quest Type</Label>
+                  <Select 
+                    value={newQuest.type} 
+                    onValueChange={(value) => setNewQuest({...newQuest, type: value as Quest["type"]})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a quest type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="reading">Reading</SelectItem>
+                      <SelectItem value="revision">Revision</SelectItem>
+                      <SelectItem value="homework">Homework</SelectItem>
+                      <SelectItem value="activity">Activity</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="duration">Duration (minutes)</Label>
+                  <Input 
+                    id="duration" 
+                    type="number"
+                    min="5"
+                    value={newQuest.duration_minutes}
+                    onChange={(e) => setNewQuest({...newQuest, duration_minutes: parseInt(e.target.value) || 30})}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={() => setIsDialogOpen(false)} variant="outline">Cancel</Button>
+                <Button onClick={handleCreateQuest}>Create Quest</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
       
-      <Tabs defaultValue="daily" className="mb-6">
-        <TabsList>
-          <TabsTrigger value="daily" className="flex items-center">
-            <Clock className="h-4 w-4 mr-2" />
-            Daily Quests
-          </TabsTrigger>
-          <TabsTrigger value="weekly" className="flex items-center">
-            <Calendar className="h-4 w-4 mr-2" />
-            Weekly Quests
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="daily" className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredDailyQuests.length > 0 ? (
-              filteredDailyQuests.map(quest => (
-                <DailyQuestCard
-                  key={quest.id}
-                  type={quest.type}
-                  title={quest.title}
-                  description={quest.description}
-                  durationMinutes={quest.durationMinutes}
-                  xpReward={quest.xpReward}
-                  energyReward={quest.energyReward}
-                  completed={quest.completed}
-                  progress={quest.progress}
-                  onStartTracking={() => handleStartTracking(quest.id, "daily")}
-                  onComplete={() => handleCompleteQuest(quest.id, "daily")}
-                />
-              ))
-            ) : (
-              <div className="col-span-2 text-center p-10 border rounded-xl bg-gray-50">
-                <p className="text-lg text-gray-500">No quests found with the selected filter.</p>
-                <Button variant="outline" className="mt-4" onClick={() => setFilter("all")}>
-                  Show All Quests
-                </Button>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="weekly" className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filteredWeeklyQuests.length > 0 ? (
-              filteredWeeklyQuests.map(quest => (
-                <DailyQuestCard
-                  key={quest.id}
-                  type={quest.type}
-                  title={quest.title}
-                  description={quest.description}
-                  durationMinutes={quest.durationMinutes}
-                  xpReward={quest.xpReward}
-                  energyReward={quest.energyReward}
-                  completed={quest.completed}
-                  progress={quest.progress}
-                  onStartTracking={() => handleStartTracking(quest.id, "weekly")}
-                  onComplete={() => handleCompleteQuest(quest.id, "weekly")}
-                />
-              ))
-            ) : (
-              <div className="col-span-2 text-center p-10 border rounded-xl bg-gray-50">
-                <p className="text-lg text-gray-500">No quests found with the selected filter.</p>
-                <Button variant="outline" className="mt-4" onClick={() => setFilter("all")}>
-                  Show All Quests
-                </Button>
-              </div>
-            )}
-          </div>
-        </TabsContent>
-      </Tabs>
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2 text-lg">Loading quests...</span>
+        </div>
+      ) : (
+        <Tabs defaultValue="daily" className="mb-6">
+          <TabsList>
+            <TabsTrigger value="daily" className="flex items-center">
+              <Clock className="h-4 w-4 mr-2" />
+              Daily Quests
+            </TabsTrigger>
+            <TabsTrigger value="weekly" className="flex items-center">
+              <Calendar className="h-4 w-4 mr-2" />
+              Weekly Quests
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="daily" className="mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {dailyQuests.length > 0 ? (
+                dailyQuests.map(quest => (
+                  <DailyQuestCard
+                    key={quest.id}
+                    type={quest.type}
+                    title={quest.title}
+                    description={quest.description}
+                    durationMinutes={quest.duration_minutes}
+                    xpReward={quest.xp_reward}
+                    energyReward={quest.energy_reward}
+                    completed={quest.completed}
+                    progress={quest.progress}
+                    onStartTracking={() => handleStartTracking(quest.id)}
+                    onComplete={() => handleCompleteQuest(quest.id)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-2 text-center p-10 border rounded-xl bg-gray-50">
+                  <p className="text-lg text-gray-500">No daily quests found. Create your first quest!</p>
+                  <Button variant="outline" className="mt-4" onClick={() => setIsDialogOpen(true)}>
+                    Create Quest
+                  </Button>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="weekly" className="mt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {weeklyQuests.length > 0 ? (
+                weeklyQuests.map(quest => (
+                  <DailyQuestCard
+                    key={quest.id}
+                    type={quest.type}
+                    title={quest.title}
+                    description={quest.description}
+                    durationMinutes={quest.duration_minutes}
+                    xpReward={quest.xp_reward}
+                    energyReward={quest.energy_reward}
+                    completed={quest.completed}
+                    progress={quest.progress}
+                    onStartTracking={() => handleStartTracking(quest.id)}
+                    onComplete={() => handleCompleteQuest(quest.id)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-2 text-center p-10 border rounded-xl bg-gray-50">
+                  <p className="text-lg text-gray-500">No weekly quests found. Create your first weekly quest!</p>
+                  <Button variant="outline" className="mt-4" onClick={() => setIsDialogOpen(true)}>
+                    Create Quest
+                  </Button>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+      )}
       
       <div className="bg-white rounded-xl border p-6">
         <h2 className="text-xl font-semibold mb-4">Quest Guidelines</h2>

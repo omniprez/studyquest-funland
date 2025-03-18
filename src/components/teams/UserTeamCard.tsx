@@ -2,17 +2,34 @@
 import { Team } from "@/lib/types";
 import TeamBadge from "@/components/TeamBadge";
 import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface UserTeamCardProps {
   team: Team;
 }
 
 const UserTeamCard = ({ team }: UserTeamCardProps) => {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
+  const [userContribution, setUserContribution] = useState(0);
   
-  // In a real application, you would fetch the user's contribution to the team
-  // For now, we'll use a random value between 100-500
-  const userContribution = Math.floor(Math.random() * 400) + 100;
+  useEffect(() => {
+    // Fetch the user's contribution to the team
+    const fetchUserContribution = async () => {
+      if (!user) return;
+      
+      try {
+        // In a real application, this would query the user's completed quests and sum up points
+        // For now, we'll simulate with a random value between 100-500
+        const contribution = Math.floor(Math.random() * 400) + 100;
+        setUserContribution(contribution);
+      } catch (error) {
+        console.error('Error fetching user contribution:', error);
+      }
+    };
+    
+    fetchUserContribution();
+  }, [user]);
   
   return (
     <div className="bg-gray-50 rounded-lg p-4 border">

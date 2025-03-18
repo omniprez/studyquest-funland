@@ -27,3 +27,20 @@ export type Team = {
   created_at?: string;
   updated_at?: string;
 };
+
+// Quest type definition
+export type Quest = {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string;
+  type: 'reading' | 'revision' | 'homework' | 'activity';
+  duration_minutes: number;
+  xp_reward: number;
+  energy_reward: number;
+  progress: number;
+  completed: boolean;
+  due_date?: string;
+  created_at?: string;
+  updated_at?: string;
+};
